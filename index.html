@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preksha Shetty — Applied AI & Data Engineer</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,600;1,400;1,500&display=swap" rel="stylesheet">
+  
+  <!-- Loading Tailwind CSS & Three.js CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            heading: ['"Outfit"', 'sans-serif'],
+            serif: ['"Cormorant Garamond"', 'serif'],
+          },
+          colors: {
+            brand: {
+              black: '#080808',
+              obsidian: '#0e0e0e',
+              card: '#121212',
+              pink: '#ff6b6b',
+              pinkLight: '#ff8e8e',
+              coral: '#ff9a7b',
+              muted: '#888888',
+              border: 'rgba(255,255,255,0.06)'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Smooth Scrolling */
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    /* Elegant custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #080808;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #222;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #ff6b6b;
+    }
+
+    /* Three.js canvas backing fallback */
+    #canvas3d {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at 80% 20%, #1a0f0f 0%, #080808 70%);
+    }
+
+    /* Custom elegant cursor elements */
+    .custom-cur {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      background: #ff6b6b;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s, height 0.2s;
+    }
+    .custom-ring {
+      position: fixed;
+      width: 36px;
+      height: 36px;
+      border: 1px solid rgba(255, 107, 107, 0.4);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.15s ease-out, border-color 0.2s;
+    }
+
+    @media (pointer: coarse) {
+      .custom-cur, .custom-ring {
+        display: none !important;
+      }
+    }
+
+    /* Glow treatments and transitions */
+    .glow-on-hover {
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .glow-on-hover:hover {
+      border-color: rgba(255, 107, 107, 0.25);
+      box-shadow: 0 0 30px rgba(255, 107, 107, 0.04);
+      transform: translateY(-2px);
+    }
+
+    /* Scroll reveal transitions */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Infinite terminal cursor blink */
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+    .terminal-cursor {
+      animation: blink 1s infinite;
+    }
+  </style>
+</head>
+<body class="bg-brand-black text-[#f0eeee] font-sans overflow-x-hidden">
+
+  <!-- Interactive elements -->
+  <canvas id="canvas3d"></canvas>
+  <div class="custom-cur" id="jsCursor"></div>
+  <div class="custom-ring" id="jsRing"></div>
+
+  <nav class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-brand-black/75 border-b border-brand-border px-6 md:px-16 py-5 flex justify-between items-center">
+    <div class="font-heading text-lg font-bold tracking-wide">
+      Preksha <span class="font-serif italic font-normal text-brand-pink text-xl">Shetty</span>
+    </div>
+    <div class="hidden md:flex gap-8">
+      <a href="#exp" class="text-xs uppercase tracking-widest text-brand-muted hover:text-brand-pink transition-colors">Experience</a>
+      <a href="#proj" class="text-xs uppercase tracking-widest text-brand-muted hover:text-brand-pink transition-colors">Projects</a>
+      <a href="#skills" class="text-xs uppercase tracking-widest text-brand-muted hover:text-brand-pink transition-colors">Technical Focus</a>
+      <a href="#contact" class="text-xs uppercase tracking-widest text-brand-muted hover:text-brand-pink transition-colors">Contact</a>
+    </div>
+  </nav>
+
+  <div class="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-16">
+
+    <section class="min-h-screen pt-28 pb-16 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      
+      <!-- Hero Left: Bio, Goals and Links -->
+      <div class="lg:col-span-7 flex flex-col justify-center">
+        <div class="inline-flex items-center gap-2 text-[10px] tracking-[0.25em] uppercase font-semibold text-brand-pink mb-6">
+          <span class="w-1.5 h-1.5 bg-brand-pink rounded-full animate-ping"></span>
+          Open to Opportunities · Class of 2026
+        </div>
+        
+        <h1 class="text-5xl md:text-7xl font-light font-heading leading-none mb-4 tracking-tight">
+          Preksha<br>
+          <span class="font-serif italic text-brand-pink font-normal text-6xl md:text-8xl">Shetty</span>
+        </h1>
+        
+        <p class="text-xs uppercase tracking-widest text-brand-muted font-medium mb-6">
+          Applied AI · Data Engineering · Quantitative Analytics
+        </p>
+        
+        <p class="text-base text-gray-400 font-light leading-relaxed max-w-xl mb-10">
+          Engineering resilient data pipelines and orchestrating applied AI systems. I focus on optimizing retrieval-augmented generation (RAG) architectures, structuring automated financial forecasting pipelines, and building scalable cloud analytics.
+        </p>
+        
+        <div class="flex flex-wrap gap-4">
+          <a href="mailto:prekshashetty540@gmail.com" class="px-6 py-3 bg-brand-pink text-brand-black text-[11px] uppercase tracking-widest font-semibold rounded-sm hover:bg-brand-pinkLight hover:-translate-y-0.5 transition-all duration-300 shadow-lg shadow-brand-pink/20">
+            Get In Touch
+          </a>
+          <a href="https://github.com/Preksha-Shetty" target="_blank" class="px-6 py-3 border border-brand-border bg-brand-card/50 text-[11px] uppercase tracking-widest font-semibold rounded-sm hover:border-brand-pink text-gray-300 hover:text-brand-pink hover:-translate-y-0.5 transition-all duration-300">
+            GitHub Profile →
+          </a>
+          <a href="https://www.linkedin.com/in/prekshasshetty/" target="_blank" class="px-6 py-3 border border-brand-border bg-brand-card/50 text-[11px] uppercase tracking-widest font-semibold rounded-sm hover:border-brand-pink text-gray-300 hover:text-brand-pink hover:-translate-y-0.5 transition-all duration-300">
+            LinkedIn →
+          </a>
+        </div>
+      </div>
+
+      <!-- Hero Right: Dynamic Interactive Dashboard Widgets -->
+      <div class="lg:col-span-5 flex flex-col gap-6">
+        
+        <!-- GPA Widget with active SVG progress circle -->
+        <div class="bg-brand-card/70 border border-brand-border rounded p-6 flex items-center justify-between glow-on-hover relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-1 h-full bg-brand-pink"></div>
+          <div>
+            <div class="text-xs uppercase tracking-widest text-brand-muted mb-1">Academic Performance</div>
+            <div class="text-sm font-semibold text-gray-300">University at Buffalo</div>
+            <div class="text-[10px] text-brand-pink tracking-wider uppercase mt-1">MS Business Analytics</div>
+          </div>
+          <div class="relative flex items-center justify-center w-24 h-24">
+            <svg class="w-full h-full transform -rotate-90">
+              <!-- Background circle -->
+              <circle cx="48" cy="48" r="38" stroke="rgba(255,255,255,0.03)" stroke-width="4" fill="transparent"/>
+              <!-- GPA progress circle (3.9 out of 4.0 is ~97.5%) -->
+              <circle cx="48" cy="48" r="38" stroke="#ff6b6b" stroke-width="4" fill="transparent" 
+                stroke-dasharray="238.76" stroke-dashoffset="6" class="transition-all duration-1000" />
+            </svg>
+            <div class="absolute text-center">
+              <span class="text-2xl font-bold font-heading">3.9</span>
+              <span class="text-[10px] text-brand-muted">/4</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Terminal Widget simulating operational data flow processes -->
+        <div class="bg-black/80 border border-brand-border rounded p-6 glow-on-hover relative">
+          <div class="flex items-center gap-1.5 mb-4">
+            <span class="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-green-500/80"></span>
+            <span class="ml-2 text-[10px] font-mono text-brand-muted tracking-widest uppercase">Applied Pipeline Monitor</span>
+          </div>
+          
+          <div class="font-mono text-[11px] text-green-400 space-y-2.5 min-h-[140px]" id="terminalOutput">
+            <div><span class="text-brand-pink">❯</span> Loading pipeline core execution logs...</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="py-24 border-t border-brand-border" id="exp">
+      <div class="flex items-baseline gap-4 mb-16 reveal">
+        <span class="text-xs font-mono font-semibold text-brand-pink tracking-widest">01 /</span>
+        <h2 class="text-3xl font-heading font-light">Professional <span class="font-serif italic text-brand-pink">Experience</span></h2>
+        <div class="flex-grow h-px bg-brand-border"></div>
+      </div>
+
+      <div class="space-y-12">
+        
+        <!-- Experience Block 1 -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 pb-12 border-b border-brand-border/60 reveal">
+          <div class="md:col-span-3">
+            <span class="text-xs uppercase tracking-widest text-brand-pink font-semibold">Sept 2025 — Present</span>
+            <div class="text-sm font-semibold text-gray-300 mt-1">University at Buffalo</div>
+          </div>
+          <div class="md:col-span-9">
+            <h3 class="text-lg font-heading font-medium text-white mb-2">Student Assistant, Data & Applied Analytics</h3>
+            <p class="text-sm text-gray-400 leading-relaxed font-light mb-4">
+              Architected AMS data solutions for non-profits, deployed LLM-driven semantic layers for entity matching, and built AI-powered analytics platforms processing 25+ hours of coaching transcripts — cutting manual analysis time by 30%.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="px-2.5 py-1 text-[9px] font-mono tracking-wider uppercase text-brand-pink bg-brand-pink/5 border border-brand-pink/15 rounded-sm">Python</span>
+              <span class="px-2.5 py-1 text-[9px] font-mono tracking-wider uppercase text-brand-pink bg-brand-pink/5 border border-brand-pink/15 rounded-sm">NLP</span>
+              <span class="px-2.5 py-1 text-[9px] font-mono tracking-wider uppercase text-brand-pink bg-brand-pink/5 border border-brand-pink/15 rounded-sm">ETL</span>
+              <span class="px-2.5 py-1 text-[9px] font-mono tracking-wider uppercase text-brand-pink bg-brand-pink/5 border border-brand-pink/15 rounded-sm">LLM</span>
+              <span class="px-2.5 py-1 text-[9px] font-mono tracking-wider uppercase text-brand-pink bg-brand-pink/5 border border-brand-pink/15 rounded-sm">spaCy</span>
+              <span class="px-2.5 py-1 text-[9px] font-mono tracking-wider uppercase text-brand-pink bg-brand-pink/5 border border-brand-pink/15 rounded-sm">scikit-learn</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Experience Block 2 -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 pb-12 border-b border-brand-border/60 reveal">
+          <div class="md:col-span-3">
+            <span class="text-xs uppercase tracking-widest text-brand-pink font-semibold">Feb 2024 — Jun 2025</span>
+            <div class="text-sm font-semibold text-gray-300 mt-1">Mecklai Financial Services</div>
+          </div>
+          <div class="md:col-span-9">
+            <h3 class="text-lg font-heading font-medium text-white mb-2">Financial Analyst, Quantitative Analytics</h3>
+            <p class="text-sm text-gray-400 leading-relaxed font-light mb-4">
+              Automated Bloomberg Terminal pipelines processing 500+ macroeconomic indicators daily — securing a 70% reduction in manual effort. Built forecasting models with 80%+ directional accuracy across 10+ currency pairs. Developed 20+ Tableau dashboards.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="px-2.5 py-1 text-[9px] font-mono tracking-wider uppercase text-brand-pink bg-brand-pink/5 border border-brand-pink/15 rounded-sm">Python</span>
+              <span class="px-2.5 py-1 text-[9px] font-mono tracking-wider uppercase text-brand-pink bg-brand-pink/5 border border-brand-pink/15 rounded-sm">SQL</span>
+              <span class="px-2.5 py-1 text-[9px] font-mono tracking-wider uppercase text-brand-pink bg-brand-pink/5 border border-brand-pink/15 rounded-sm">Bloomberg API</span>
+              <span class="px-2.5 py-1 text-[9px] font-mono tracking-wider uppercase text-brand-pink bg-brand-pink/5 border border-brand-pink/15 rounded-sm">Tableau</span>
+              <span class="px-2.5 py-1 text-[9px] font-mono tracking-wider uppercase text-brand-pink bg-brand-pink/5 border border-brand-pink/15 rounded-sm">Time Series</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Experience Block 3 -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 pb-6 reveal">
+          <div class="md:col-span-3">
+            <span class="text-xs uppercase tracking-widest text-brand-pink font-semibold">May 2023 — Jun 2023</span>
+            <div class="text-sm font-semibold text-gray-300 mt-1">Vardhan Consulting</div>
+          </div>
+          <div class="md:col-span-9">
+            <h3 class="text-lg font-heading font-medium text-white mb-2">Finance & Data Analytics Intern</h3>
+            <p class="text-sm text-gray-400 leading-relaxed font-light mb-4">
+              Executed data-driven financial risk analysis for a ₹60 crore solar project across 12+ variables. Recommended optimal resource structures projected to increase overall ROI by 8%.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="px-2.5 py-1 text-[9px] font-mono tracking-wider uppercase text-brand-pink bg-brand-pink/5 border border-brand-pink/15 rounded-sm">Risk Analysis</span>
+              <span class="px-2.5 py-1 text-[9px] font-mono tracking-wider uppercase text-brand-pink bg-brand-pink/5 border border-brand-pink/15 rounded-sm">Financial Modeling</span>
+              <span class="px-2.5 py-1 text-[9px] font-mono tracking-wider uppercase text-brand-pink bg-brand-pink/5 border border-brand-pink/15 rounded-sm">Excel</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="py-24 border-t border-brand-border" id="proj">
+      <div class="flex items-baseline gap-4 mb-16 reveal">
+        <span class="text-xs font-mono font-semibold text-brand-pink tracking-widest">02 /</span>
+        <h2 class="text-3xl font-heading font-light">Featured <span class="font-serif italic text-brand-pink">Projects</span></h2>
+        <div class="flex-grow h-px bg-brand-border"></div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Project Card 1 -->
+        <div class="bg-brand-card/40 border border-brand-border p-6 rounded flex flex-col justify-between glow-on-hover relative group reveal">
+          <div>
+            <div class="flex justify-between items-start mb-6">
+              <span class="text-xs font-mono text-brand-muted">01</span>
+              <span class="w-2.5 h-2.5 rounded-full bg-brand-pink/40 group-hover:bg-brand-pink transition-colors"></span>
+            </div>
+            <h3 class="text-base font-semibold text-white mb-3 group-hover:text-brand-pink transition-colors">Local AI Web Stack & Agentic Pipelines</h3>
+            <p class="text-xs text-gray-400 font-light leading-relaxed mb-6">
+              Local LLM orchestration with Ollama, RAG architecture using llama-index + ChromaDB, and a custom ReAct Agent with web-search and multi-step reasoning capabilities.
+            </p>
+          </div>
+          <div>
+            <div class="flex flex-wrap gap-1.5 mb-4">
+              <span class="text-[9px] bg-white/5 px-2 py-0.5 rounded-sm font-mono text-gray-300">Llama-Index</span>
+              <span class="text-[9px] bg-white/5 px-2 py-0.5 rounded-sm font-mono text-gray-300">Ollama</span>
+              <span class="text-[9px] bg-white/5 px-2 py-0.5 rounded-sm font-mono text-gray-300">ChromaDB</span>
+            </div>
+            <div class="text-[10px] uppercase tracking-wider text-brand-pink font-semibold">Local Deployment</div>
+          </div>
+        </div>
+
+        <!-- Project Card 2 -->
+        <div class="bg-brand-card/40 border border-brand-border p-6 rounded flex flex-col justify-between glow-on-hover relative group reveal">
+          <div>
+            <div class="flex justify-between items-start mb-6">
+              <span class="text-xs font-mono text-brand-muted">02</span>
+              <a href="https://github.com/Preksha-Shetty/YumDrop" target="_blank" class="text-brand-muted hover:text-brand-pink transition-colors text-xs font-mono">CODE ↗</a>
+            </div>
+            <h3 class="text-base font-semibold text-white mb-3 group-hover:text-brand-pink transition-colors">YumDrop: AI-Native Recipe Platform</h3>
+            <p class="text-xs text-gray-400 font-light leading-relaxed mb-6">
+              Sophisticated RAG pipeline integrated with the Claude API to translate arbitrary pantry inputs into balanced culinary guides, successfully eliminating kitchen waste.
+            </p>
+          </div>
+          <div>
+            <div class="flex flex-wrap gap-1.5 mb-4">
+              <span class="text-[9px] bg-white/5 px-2 py-0.5 rounded-sm font-mono text-gray-300">Claude API</span>
+              <span class="text-[9px] bg-white/5 px-2 py-0.5 rounded-sm font-mono text-gray-300">RAG</span>
+              <span class="text-[9px] bg-white/5 px-2 py-0.5 rounded-sm font-mono text-gray-300">NLP</span>
+            </div>
+            <a href="https://github.com/Preksha-Shetty/YumDrop" target="_blank" class="text-[10px] uppercase tracking-wider text-brand-pink font-semibold hover:underline inline-block">Explore Codebase ↗</a>
+          </div>
+        </div>
+
+        <!-- Project Card 3 -->
+        <div class="bg-brand-card/40 border border-brand-border p-6 rounded flex flex-col justify-between glow-on-hover relative group reveal">
+          <div>
+            <div class="flex justify-between items-start mb-6">
+              <span class="text-xs font-mono text-brand-muted">03</span>
+              <a href="https://github.com/Preksha-Shetty/Customer-Segmentation" target="_blank" class="text-brand-muted hover:text-brand-pink transition-colors text-xs font-mono">CODE ↗</a>
+            </div>
+            <h3 class="text-base font-semibold text-white mb-3 group-hover:text-brand-pink transition-colors">Customer Segmentation Modeling</h3>
+            <p class="text-xs text-gray-400 font-light leading-relaxed mb-6">
+              K-Means clustering algorithm classifying customers into seven behavioral groups. Features a deployment-ready Streamlit app interface.
+            </p>
+          </div>
+          <div>
+            <div class="flex flex-wrap gap-1.5 mb-4">
+              <span class="text-[9px] bg-white/5 px-2 py-0.5 rounded-sm font-mono text-gray-300">Scikit-learn</span>
+              <span class="text-[9px] bg-white/5 px-2 py-0.5 rounded-sm font-mono text-gray-300">K-Means</span>
+              <span class="text-[9px] bg-white/5 px-2 py-0.5 rounded-sm font-mono text-gray-300">Streamlit</span>
+            </div>
+            <a href="https://github.com/Preksha-Shetty/Customer-Segmentation" target="_blank" class="text-[10px] uppercase tracking-wider text-brand-pink font-semibold hover:underline inline-block">Explore Codebase ↗</a>
+          </div>
+        </div>
+
+        <!-- Project Card 4 -->
+        <div class="bg-brand-card/40 border border-brand-border p-6 rounded flex flex-col justify-between glow-on-hover relative group reveal">
+          <div>
+            <div class="flex justify-between items-start mb-6">
+              <span class="text-xs font-mono text-brand-muted">04</span>
+              <a href="https://github.com/Preksha-Shetty/RateWatch" target="_blank" class="text-brand-muted hover:text-brand-pink transition-colors text-xs font-mono">CODE ↗</a>
+            </div>
+            <h3 class="text-base font-semibold text-white mb-3 group-hover:text-brand-pink transition-colors">RateWatch: Currency Forecasting</h3>
+            <p class="text-xs text-gray-400 font-light leading-relaxed mb-6">
+              Ingestion engine utilizing REST APIs with OLS regression forecasting to map macro-currency moves with actionable, logic-bound trading signals.
+            </p>
+          </div>
+          <div>
+            <div class="flex flex-wrap gap-1.5 mb-4">
+              <span class="text-[9px] bg-white/5 px-2 py-0.5 rounded-sm font-mono text-gray-300">Python</span>
+              <span class="text-[9px] bg-white/5 px-2 py-0.5 rounded-sm font-mono text-gray-300">Scikit-learn</span>
+              <span class="text-[9px] bg-white/5 px-2 py-0.5 rounded-sm font-mono text-gray-300">REST APIs</span>
+            </div>
+            <a href="https://github.com/Preksha-Shetty/RateWatch" target="_blank" class="text-[10px] uppercase tracking-wider text-brand-pink font-semibold hover:underline inline-block">Explore Codebase ↗</a>
+          </div>
+        </div>
+
+        <!-- Project Card 5 -->
+        <div class="bg-brand-card/40 border border-brand-border p-6 rounded flex flex-col justify-between glow-on-hover relative group reveal">
+          <div>
+            <div class="flex justify-between items-start mb-6">
+              <span class="text-xs font-mono text-brand-muted">05</span>
+              <a href="https://github.com/Preksha-Shetty/Data-Cleaning-in-SQL" target="_blank" class="text-brand-muted hover:text-brand-pink transition-colors text-xs font-mono">CODE ↗</a>
+            </div>
+            <h3 class="text-base font-semibold text-white mb-3 group-hover:text-brand-pink transition-colors">Data Transformation Pipelines</h3>
+            <p class="text-xs text-gray-400 font-light leading-relaxed mb-6">
+              Multi-step complex SQL cleansing procedures and data pipeline orchestration routines, bringing quality consistency metrics above 90%.
+            </p>
+          </div>
+          <div>
+            <div class="flex flex-wrap gap-1.5 mb-4">
+              <span class="text-[9px] bg-white/5 px-2 py-0.5 rounded-sm font-mono text-gray-300">SQL Server</span>
+              <span class="text-[9px] bg-white/5 px-2 py-0.5 rounded-sm font-mono text-gray-300">ETL Pipelines</span>
+              <span class="text-[9px] bg-white/5 px-2 py-0.5 rounded-sm font-mono text-gray-300">Cleansing</span>
+            </div>
+            <a href="https://github.com/Preksha-Shetty/Data-Cleaning-in-SQL" target="_blank" class="text-[10px] uppercase tracking-wider text-brand-pink font-semibold hover:underline inline-block">Explore Codebase ↗</a>
+          </div>
+        </div>
+
+        <!-- Project Card 6 -->
+        <div class="bg-brand-card/40 border border-brand-border p-6 rounded flex flex-col justify-between glow-on-hover relative group reveal">
+          <div>
+            <div class="flex justify-between items-start mb-6">
+              <span class="text-xs font-mono text-brand-muted">06</span>
+              <a href="https://github.com/Preksha-Shetty/XGBoost-Intelligence-for-Urban-Mobility-Markets" target="_blank" class="text-brand-muted hover:text-brand-pink transition-colors text-xs font-mono">CODE ↗</a>
+            </div>
+            <h3 class="text-base font-semibold text-white mb-3 group-hover:text-brand-pink transition-colors">Urban Mobility Demand Analytics</h3>
+            <p class="text-xs text-gray-400 font-light leading-relaxed mb-6">
+              XGBoost predictive regression model optimizing mass allocation and anticipating dispatch logistics patterns in complex urban centers.
+            </p>
+          </div>
+          <div>
+            <div class="flex flex-wrap gap-1.5 mb-4">
+              <span class="text-[9px] bg-white/5 px-2 py-0.5 rounded-sm font-mono text-gray-300">XGBoost</span>
+              <span class="text-[9px] bg-white/5 px-2 py-0.5 rounded-sm font-mono text-gray-300">Pandas</span>
+              <span class="text-[9px] bg-white/5 px-2 py-0.5 rounded-sm font-mono text-gray-300">Scikit-learn</span>
+            </div>
+            <a href="https://github.com/Preksha-Shetty/XGBoost-Intelligence-for-Urban-Mobility-Markets" target="_blank" class="text-[10px] uppercase tracking-wider text-brand-pink font-semibold hover:underline inline-block">Explore Codebase ↗</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="py-24 border-t border-brand-border" id="skills">
+      <div class="flex items-baseline gap-4 mb-16 reveal">
+        <span class="text-xs font-mono font-semibold text-brand-pink tracking-widest">03 /</span>
+        <h2 class="text-3xl font-heading font-light">Technical <span class="font-serif italic text-brand-pink">Focus</span></h2>
+        <div class="flex-grow h-px bg-brand-border"></div>
+      </div>
+
+      <!-- Elaborated Skills Section -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Group 1: Applied AI & Language Engineering -->
+        <div class="border border-brand-border rounded p-6 bg-brand-card/20 glow-on-hover reveal">
+          <div class="text-[10px] uppercase tracking-[0.2em] text-brand-pink font-semibold pb-3 border-b border-brand-border mb-4 flex justify-between items-center">
+            <span>Applied AI & NLP</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-brand-pink"></span>
+          </div>
+          <ul class="text-xs text-gray-400 space-y-3 font-light">
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> Retrieval-Augmented Generation (RAG)</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> Agentic AI Pipelines (ReAct Framework)</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> LLM Orchestration (Claude, Ollama)</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> LlamaIndex & LangChain Integrations</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> Vector Databases (ChromaDB, Pinecone)</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> NLP Engines (spaCy, NLTK, Sentiment Analysis)</li>
+          </ul>
+        </div>
+
+        <!-- Group 2: Modern Data Engineering & ETL -->
+        <div class="border border-brand-border rounded p-6 bg-brand-card/20 glow-on-hover reveal">
+          <div class="text-[10px] uppercase tracking-[0.2em] text-brand-pink font-semibold pb-3 border-b border-brand-border mb-4 flex justify-between items-center">
+            <span>Data Operations & Pipelines</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-brand-pink"></span>
+          </div>
+          <ul class="text-xs text-gray-400 space-y-3 font-light">
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> End-to-End ETL / ELT Architecture</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> API-Driven Ingestion Engine Construction</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> Snowflake & Databricks Warehousing</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> Dimensional Modeling (Star/Snowflake Schema)</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> Distributed Computing (Apache Spark, Hadoop)</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> Workflow Orchestration Concepts</li>
+          </ul>
+        </div>
+
+        <!-- Group 3: Machine Learning & Analytics -->
+        <div class="border border-brand-border rounded p-6 bg-brand-card/20 glow-on-hover reveal">
+          <div class="text-[10px] uppercase tracking-[0.2em] text-brand-pink font-semibold pb-3 border-b border-brand-border mb-4 flex justify-between items-center">
+            <span>Predictive ML & Analytics</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-brand-pink"></span>
+          </div>
+          <ul class="text-xs text-gray-400 space-y-3 font-light">
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> XGBoost Predictive Regressions</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> Clustering Algorithms (K-Means Segmentation)</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> Time Series Forecasting Models</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> OLS Regression Analysis & Trend Mapping</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> Scientific Stack (Scikit-Learn, Pandas, NumPy)</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> Feature Engineering & Hyperparameter Tuning</li>
+          </ul>
+        </div>
+
+        <!-- Group 4: Languages & Query Optimization -->
+        <div class="border border-brand-border rounded p-6 bg-brand-card/20 glow-on-hover reveal">
+          <div class="text-[10px] uppercase tracking-[0.2em] text-brand-pink font-semibold pb-3 border-b border-brand-border mb-4 flex justify-between items-center">
+            <span>Languages & Querying</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-brand-pink"></span>
+          </div>
+          <ul class="text-xs text-gray-400 space-y-3 font-light">
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> Python (Procedural, OO, Scripting Core)</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> PostgreSQL, MySQL & Oracle Database Administration</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> Advanced Query Tuning & Execution Analysis</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> Window Functions, Complex Joins & CTEs</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> Database Sanitization Routines</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> Command Line Scripting (Bash/Shell Core)</li>
+          </ul>
+        </div>
+
+        <!-- Group 5: Cloud Architecture & Ecosystem -->
+        <div class="border border-brand-border rounded p-6 bg-brand-card/20 glow-on-hover reveal">
+          <div class="text-[10px] uppercase tracking-[0.2em] text-brand-pink font-semibold pb-3 border-b border-brand-border mb-4 flex justify-between items-center">
+            <span>Cloud & Infrastructure</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-brand-pink"></span>
+          </div>
+          <ul class="text-xs text-gray-400 space-y-3 font-light">
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> AWS Infrastructure Management</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> Storage Architectures (Amazon S3, RDS)</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> Version Control Structures (Git, GitHub)</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> Secure AWS IAM Policies Management</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> Enterprise Snowflake Data Lake Layouts</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> Agile/Scrum Operational Paradigms</li>
+          </ul>
+        </div>
+
+        <!-- Group 6: Quantitative Analysis & BI Platforms -->
+        <div class="border border-brand-border rounded p-6 bg-brand-card/20 glow-on-hover reveal">
+          <div class="text-[10px] uppercase tracking-[0.2em] text-brand-pink font-semibold pb-3 border-b border-brand-border mb-4 flex justify-between items-center">
+            <span>BI & Quantitative Systems</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-brand-pink"></span>
+          </div>
+          <ul class="text-xs text-gray-400 space-y-3 font-light">
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> Business Intelligence Delivery (Tableau, Power BI)</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> Streamlit Application Deployment Architectures</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> Bloomberg Terminal API Automation Systems</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> Financial Risk Analytics & OLS Modeling</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> Solar Project Risk Appraisals</li>
+            <li class="flex items-center gap-2"><span class="w-1 h-1 bg-brand-pink/60 rounded-full"></span> ROI Sensitivity Analysis Modeling</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="mt-20">
+        <div class="flex items-baseline gap-4 mb-10 reveal">
+          <span class="text-xs font-mono font-semibold text-brand-pink tracking-widest">04 /</span>
+          <h2 class="text-xl font-heading font-light">Professional <span class="font-serif italic text-brand-pink">Credentials</span></h2>
+          <div class="flex-grow h-px bg-brand-border/40"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          
+          <!-- Cert 1 -->
+          <div class="border border-brand-border bg-brand-card/60 p-5 rounded flex items-center gap-4 glow-on-hover reveal" style="border-left: 2px solid #ff9900;">
+            <div class="font-mono text-xs text-[#ff9900] font-semibold">AWS</div>
+            <div>
+              <div class="text-xs font-semibold text-white">AWS Certified Data Engineer – Associate</div>
+              <div class="text-[10px] text-brand-muted uppercase tracking-wider mt-0.5">Amazon Web Services</div>
+            </div>
+          </div>
+
+          <!-- Cert 2 -->
+          <div class="border border-brand-border bg-brand-card/60 p-5 rounded flex items-center gap-4 glow-on-hover reveal" style="border-left: 2px solid #ff9900;">
+            <div class="font-mono text-xs text-[#ff9900] font-semibold">AWS</div>
+            <div>
+              <div class="text-xs font-semibold text-white">AWS Certified Cloud Practitioner</div>
+              <div class="text-[10px] text-brand-muted uppercase tracking-wider mt-0.5">Amazon Web Services</div>
+            </div>
+          </div>
+
+          <!-- Cert 3 -->
+          <div class="border border-brand-border bg-brand-card/60 p-5 rounded flex items-center gap-4 glow-on-hover reveal" style="border-left: 2px solid #ff3621;">
+            <div class="font-mono text-xs text-[#ff3621] font-semibold">DBX</div>
+            <div>
+              <div class="text-xs font-semibold text-white">AI Agent Fundamentals</div>
+              <div class="text-[10px] text-brand-muted uppercase tracking-wider mt-0.5">Databricks</div>
+            </div>
+          </div>
+
+          <!-- Cert 4 -->
+          <div class="border border-brand-border bg-brand-card/60 p-5 rounded flex items-center gap-4 glow-on-hover reveal" style="border-left: 2px solid #ff3621;">
+            <div class="font-mono text-xs text-[#ff3621] font-semibold">DBX</div>
+            <div>
+              <div class="text-xs font-semibold text-white">Data Warehousing with Databricks</div>
+              <div class="text-[10px] text-brand-muted uppercase tracking-wider mt-0.5">Databricks</div>
+            </div>
+          </div>
+
+          <!-- Cert 5 -->
+          <div class="border border-brand-border bg-brand-card/60 p-5 rounded flex items-center gap-4 glow-on-hover reveal" style="border-left: 2px solid #29b5e8;">
+            <div class="font-mono text-xs text-[#29b5e8] font-semibold">SNOW</div>
+            <div>
+              <div class="text-xs font-semibold text-white">Snowflake Data Warehousing</div>
+              <div class="text-[10px] text-brand-muted uppercase tracking-wider mt-0.5">Snowflake</div>
+            </div>
+          </div>
+
+          <!-- Cert 6 -->
+          <div class="border border-brand-border bg-brand-card/60 p-5 rounded flex items-center gap-4 glow-on-hover reveal" style="border-left: 2px solid #e12d3e;">
+            <div class="font-mono text-xs text-[#e12d3e] font-semibold">TAB</div>
+            <div>
+              <div class="text-xs font-semibold text-white">Data Analytics using Tableau</div>
+              <div class="text-[10px] text-brand-muted uppercase tracking-wider mt-0.5">Tableau</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section class="py-24 text-center border-t border-brand-border" id="contact">
+      <div class="max-w-2xl mx-auto reveal">
+        <span class="text-xs font-mono text-brand-pink tracking-widest uppercase block mb-4">Let's connect</span>
+        
+        <h2 class="text-3xl md:text-4xl font-heading font-light tracking-tight mb-4">
+          Open to Applied <span class="font-serif italic text-brand-pink">AI & Data</span> Roles
+        </h2>
+        
+        <p class="text-sm text-gray-400 font-light leading-relaxed mb-12 max-w-md mx-auto">
+          MS Business Analytics · GPA 3.9 · University at Buffalo · Class of 2026
+        </p>
+        
+        <!-- Elegant, direct contact links -->
+        <div class="flex flex-col gap-6 mb-12">
+          <a href="mailto:prekshashetty540@gmail.com" class="text-xl md:text-2xl font-light hover:text-brand-pink transition-colors tracking-wide border-b border-dashed border-brand-border/30 pb-2 w-fit mx-auto">
+            prekshashetty540@gmail.com
+          </a>
+          <a href="tel:+17167170824" class="text-lg md:text-xl font-light hover:text-brand-pink transition-colors tracking-wider w-fit mx-auto">
+            +1 (716) 717-0824
+          </a>
+        </div>
+
+        <!-- Minimal social links -->
+        <div class="flex justify-center gap-8 text-xs uppercase tracking-widest font-semibold">
+          <a href="https://www.linkedin.com/in/prekshasshetty/" target="_blank" class="text-brand-muted hover:text-brand-pink transition-colors">LinkedIn</a>
+          <span class="text-brand-border">|</span>
+          <a href="https://github.com/Preksha-Shetty" target="_blank" class="text-brand-muted hover:text-brand-pink transition-colors">GitHub</a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer block -->
+  <footer class="border-t border-brand-border py-8 px-6 md:px-16 text-center md:text-left">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="text-[10px] uppercase tracking-widest text-brand-muted">
+        © 2026 Preksha Shetty. All rights reserved.
+      </div>
+      <div class="text-[10px] uppercase tracking-widest text-brand-muted">
+        Data Science & Analytics · MS Business Analytics · University at Buffalo
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Safeguarded Three.js Scene Setup to avoid unhandled errors
+    function initThreeJS() {
+      try {
+        if (typeof THREE === 'undefined') {
+          // Retry loading if Three.js is slow
+          setTimeout(initThreeJS, 100);
+          return;
+        }
+
+        const canvas = document.getElementById('canvas3d');
+        if (!canvas) return;
+
+        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        const scene = new THREE.Scene();
+        const cam = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        cam.position.z = 28;
+
+        // Interactive Particle Matrix
+        const N = 1200;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(N * 3);
+        const colors = new Float32Array(N * 3);
+        const palette = [[1, 0.42, 0.42], [1, 0.6, 0.48], [1, 0.83, 0.83], [0.95, 0.55, 0.55]];
+
+        for (let i = 0; i < N; i++) {
+          positions[i * 3] = (Math.random() - 0.5) * 80;
+          positions[i * 3 + 1] = (Math.random() - 0.5) * 80;
+          positions[i * 3 + 2] = (Math.random() - 0.5) * 35;
+          
+          const colorPair = palette[Math.floor(Math.random() * palette.length)];
+          colors[i * 3] = colorPair[0];
+          colors[i * 3 + 1] = colorPair[1];
+          colors[i * 3 + 2] = colorPair[2];
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        
+        const material = new THREE.PointsMaterial({ size: 0.14, vertexColors: true, transparent: true, opacity: 0.5 });
+        const particles = new THREE.Points(geometry, material);
+        scene.add(particles);
+
+        // Elegant geometric torus outline
+        const torusGeometry = new THREE.TorusGeometry(8, 1.8, 8, 32);
+        const torusMaterial = new THREE.MeshBasicMaterial({ color: 0xff6b6b, wireframe: true, transparent: true, opacity: 0.04 });
+        const torus = new THREE.Mesh(torusGeometry, torusMaterial);
+        torus.position.set(16, -2, 0);
+        scene.add(torus);
+
+        // Responsive positioning coordinates
+        let mouseX = 0, mouseY = 0;
+        window.addEventListener('mousemove', (e) => {
+          mouseX = (e.clientX / window.innerWidth - 0.5);
+          mouseY = -(e.clientY / window.innerHeight - 0.5);
+        });
+
+        window.addEventListener('resize', () => {
+          cam.aspect = window.innerWidth / window.innerHeight;
+          cam.updateProjectionMatrix();
+          renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        let tick = 0;
+        function animate() {
+          requestAnimationFrame(animate);
+          tick += 0.003;
+          
+          if (particles) {
+            particles.rotation.y = tick * 0.05 + mouseX * 0.1;
+            particles.rotation.x = tick * 0.02 + mouseY * 0.06;
+          }
+
+          if (torus) {
+            torus.rotation.x = tick * 0.15;
+            torus.rotation.z = tick * 0.1;
+          }
+
+          cam.position.x += (-mouseX * 2.5 - cam.position.x) * 0.04;
+          cam.position.y += (mouseY * 2.5 - cam.position.y) * 0.04;
+
+          renderer.render(scene, cam);
+        }
+
+        animate();
+      } catch (err) {
+        console.warn("Fallback graphic gradient initialized: ", err);
+      }
+    }
+
+    // Run safe canvas instantiation after window mount
+    window.addEventListener('DOMContentLoaded', initThreeJS);
+
+    // Dynamic Live Developer Simulator Output Logs
+    const simulatedLogs = [
+      "❯ Initializing LLM vector context...",
+      "❯ Embedding RAG indexes with Claude v3.5...",
+      "❯ Matching pantry inputs with recipe parameters...",
+      "❯ Status: YumDrop RAG queries resolved securely.",
+      "❯ Ingesting currency market API payload...",
+      "❯ Executing forecasting model (OLS regression)...",
+      "❯ Calculating Buy/Wait indicators...",
+      "❯ Automating daily Bloomberg Terminal telemetry...",
+      "❯ System state: Operational. Zero telemetry packet drop."
+    ];
+
+    const terminalElem = document.getElementById('terminalOutput');
+    let logIndex = 0;
+
+    function renderNextLog() {
+      if (!terminalElem) return;
+      
+      const newline = document.createElement('div');
+      newline.className = "text-[11px] leading-relaxed transition-opacity duration-300";
+      newline.innerHTML = `<span class="text-brand-pink">❯</span> ` + simulatedLogs[logIndex];
+      
+      terminalElem.appendChild(newline);
+      
+      // Control queue size inside widget
+      while (terminalElem.childNodes.length > 5) {
+        terminalElem.removeChild(terminalElem.firstChild);
+      }
+
+      logIndex = (logIndex + 1) % simulatedLogs.length;
+      setTimeout(renderNextLog, Math.random() * 1500 + 1500);
+    }
+    setTimeout(renderNextLog, 1000);
+
+    // Custom Interactive Desktop Cursor Actions
+    const cursor = document.getElementById('jsCursor');
+    const cursorRing = document.getElementById('jsRing');
+    let cursorX = 0, cursorY = 0;
+    let ringX = 0, ringY = 0;
+
+    window.addEventListener('mousemove', (e) => {
+      cursorX = e.clientX;
+      cursorY = e.clientY;
+    });
+
+    function updateCursorPosition() {
+      if (cursor && cursorRing) {
+        cursor.style.left = `${cursorX}px`;
+        cursor.style.top = `${cursorY}px`;
+        
+        ringX += (cursorX - ringX) * 0.12;
+        ringY += (cursorY - ringY) * 0.12;
+        
+        cursorRing.style.left = `${ringX}px`;
+        cursorRing.style.top = `${ringY}px`;
+      }
+      requestAnimationFrame(updateCursorPosition);
+    }
+    updateCursorPosition();
+
+    // Scale interactive cursors upon hovering links
+    document.querySelectorAll('a, button, [data-tilt]').forEach((element) => {
+      element.addEventListener('mouseenter', () => {
+        if (cursorRing) {
+          cursorRing.style.transform = 'translate(-50%, -50%) scale(1.6)';
+          cursorRing.style.borderColor = 'rgba(255, 107, 107, 0.8)';
+        }
+      });
+      element.addEventListener('mouseleave', () => {
+        if (cursorRing) {
+          cursorRing.style.transform = 'translate(-50%, -50%) scale(1)';
+          cursorRing.style.borderColor = 'rgba(255, 107, 107, 0.4)';
+        }
+      });
+    });
+
+    // Clipboard Copy Fallback
+    function copyToClipboard(text) {
+      const el = document.createElement('textarea');
+      el.value = text;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      
+      // Visual feedback
+      const originalTitle = event.target.innerHTML;
+      event.target.innerHTML = "[ Address Copied! ]";
+      event.target.style.color = "#ff6b6b";
+      setTimeout(() => {
+        event.target.innerHTML = originalTitle;
+        event.target.style.color = "";
+      }, 1500);
+    }
+
+    // Elegant Scroll-Reveal Animation Engine
+    const scrollObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            entry.target.classList.add('active');
+          }, i * 60);
+          scrollObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.05 });
+
+    document.querySelectorAll('.reveal').forEach((el) => scrollObserver.observe(el));
+  </script>
+</body>
+</html>
